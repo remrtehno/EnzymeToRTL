@@ -1,37 +1,39 @@
-import React from 'react';
-import { shallow, mount, render } from '../../enzyme';
-
-import OrderedList from '../OrderedList';
+import React from 'react'
+import {render, screen, queryByAttribute} from '@testing-library/react'
+import OrderedList from './OrderedList'
+import {OrderedListOption} from './OrderedListOption'
 
 describe('Our test suite', () => {
+  test('renders all the mocked animal options', () => {
+    const animals = ['duck', 'bear', 'whale']
 
-    it('renders all the mocked animal options', () => {
-        const animals = ['duck', 'bear', 'whale'];
+    const {getByText, container} = render(<OrderedList options={animals} />)
 
-        const wrapper = render(<OrderedList options={animals} />);
+    const animal = getByText('duck')
+    expect(animal).toBeTruthy()
 
-        expect(wrapper.find('.options')).toBeDefined();
-        expect(wrapper.find('.value')).toHaveLength(animals.length);
-    });
+    expect(container.querySelector('.options')).toBeDefined()
+    expect(screen.getAllByRole('listitem')).toHaveLength(animals.length)
+  })
 
-    it('renders no animal options', () => {
-        const animals = [];
-        const wrapper = shallow(<OrderedList options={animals} />);
+  test('renders no animal options', () => {
+    const animals = []
+    const {container} = render(<OrderedList options={animals} />)
 
-        expect(wrapper.find('.empty').exists()).toBe(true);
-    });
+    expect(container.querySelector('.empty')).toBeDefined()
+  })
 
-    it('renders a single animal option', () => {
-        const animals = ['duck'];
-        const wrapper = mount(<OrderedList options={animals} />);
+  test('renders a single animal option', () => {
+    const animals = ['duck']
+    const {container} = render(<OrderedList options={animals} />)
 
-        expect(wrapper.contains(<li key='duck' className="value">duck</li >)).toBeTruthy();
-    });
+    // expect(container.queryByAttribute()).toBeTruthy()
+  })
 
-    it('renders correct text in animal option', () => {
-        const animals = ['duck', 'bear', 'whale'];
-        const wrapper = mount(<OrderedList options={animals} />);
+  it('renders correct text in animal option', () => {
+    const animals = ['duck', 'bear', 'whale']
+    const {container} = render(<OrderedList options={animals} />)
 
-        expect(wrapper.find('.value').get(0).props.children).toEqual('duck');
-    });
-});
+    expect(container.querySelector('.value').innerHTML).toEqual('duck')
+  })
+})
